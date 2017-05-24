@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="/static/jquery.min.js"></script>
+    <script src="/static/echarts.min.js"></script>
+
+</head>
+<body>
+<div style="width:80%;display:inline-block;height: 500Px" id="picture">
+
+</div>
+<div style="width:80%;display:inline-block;height: 500Px" id="picture2">
+
+</div>
+<script>
+    //模拟插入数据，1000ms一条
+    var tem;
+    var hum;
+    var sun;
+    var rfid;
+    function RandomNumBoth(Min, Max) {
+        var Range = Max - Min;
+        var Rand = Math.random();
+        var num = Min + Math.round(Rand * Range);
+        return num;
+    }
+    function insert_info() {
+        tem = RandomNumBoth(25, 28) + " C";
+        hum = RandomNumBoth(45, 50) + " A";
+        sun = RandomNumBoth(1000, 1100) + " lx";
+        rfid = "4ED331A81488040047B994d645803709";
+        $(function () {
+            $.getJSON('/tmp', {
+                tem: tem,
+                hum: hum,
+                sun: sun,
+                rfid: rfid
+            }, function (result) {
+
+            })
+        });
+    }
+    setInterval(insert_info, 1000);
+    var start = 1;
+    var end = 20;
+
+    $(function () {
+        $.getJSON('/select_info', {
+            start: start,
+            end: end
+        }, function (result) {
+            console.log(result);
+            var list = result.name;
+            var list1 = new Array();
+            var list2 = new Array();
+            var list4 = new Array();
+            for (var i = 0; i < list.length; i++) {
+                list1.push(parseInt(list[i].hum));
+            }
+            for (var j = 0; j < list.length; j++) {
+                list2.push(parseInt(list[j].tem));
+            }
+            for (var n = 0; n < list.length; n++) {
+                list4.push(list[n].time);
+            }
+            var myChart = echarts.init(document.getElementById('picture'));
+            var option = {
+                title: {
+                    text: '折线图堆叠'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['湿度', '温度']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: list4
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+                    {
+                        name: '湿度',
+                        type: 'line',
+                        data: list1
+                    },
+                    {
+                        name: '温度',
+                        type: 'line',
+                        data: list2
+                    }
+                ]
+            };
+            myChart.setOption(option);
+            setInterval(function () {
+
+                    list1.shift();
+                    list2.shift();
+                    list4.shift();
+                    start = start + 1;
+                    end = end + 1;
+                    $(function () {
+                        $.getJSON('/select_info', {
+                            start: start,
+                            end: end
+                        }, function (result) {
+                            var list5 = result.name;
+                            var length = list5.length;
+                            list1.push(parseInt(list5[length - 1].hum));
+                            list2.push(parseInt(list5[length - 1].tem));
+                            list4.push(list5[length - 1].time);
+                        })
+                    });
+
+                myChart.setOption({
+                    series: [{
+                        name: '湿度',
+                        type: 'line',
+                        data: list1
+                    },
+                        {
+                            name: '温度',
+                            type: 'line',
+                            data: list2
+                        }],
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: list4
+                    }
+
+                });
+            }, 1000);
+
+        })
+    });
+
+
+    $(function () {
+        $.getJSON('/select_info', {
+            start: start,
+            end: end
+        }, function (result) {
+            console.log(result);
+            var list = result.name;
+            var list3 = new Array();
+            var list4 = new Array();
+
+            for (var j = 0; j < list.length; j++) {
+                list3.push(parseInt(list[j].sun));
+            }
+            for (var n = 0; n < list.length; n++) {
+                list4.push(list[n].time);
+            }
+            var myChart2 = echarts.init(document.getElementById('picture2'));
+            var option = {
+                title: {
+                    text: '折线图堆叠'
+                },
+                tooltip: {
+                    trigger: 'axis'
+                },
+                legend: {
+                    data: ['光照']
+                },
+                grid: {
+                    left: '3%',
+                    right: '4%',
+                    bottom: '3%',
+                    containLabel: true
+                },
+                toolbox: {
+                    feature: {
+                        saveAsImage: {}
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: list4
+                },
+                yAxis: {
+                    type: 'value'
+                },
+                series: [
+
+                    {
+                        name: '光照',
+                        type: 'line',
+                        data: list3
+                    }
+                ]
+            };
+            myChart2.setOption(option);
+            setInterval(function () {
+
+                list3.shift();
+                list4.shift();
+                start = start + 1;
+                end = end + 1;
+                $(function () {
+                    $.getJSON('/select_info', {
+                        start: start,
+                        end: end
+                    }, function (result) {
+                        var list5 = result.name;
+                        var length = list5.length;
+                        list3.push(parseInt(list5[length - 1].sun));
+                        list4.push(list5[length - 1].time);
+                    })
+                });
+
+                myChart2.setOption({
+                    series: [
+                        {
+                            name: '光照',
+                            type: 'line',
+                            data: list3
+                        }],
+                    xAxis: {
+                        type: 'category',
+                        boundaryGap: false,
+                        data: list4
+                    }
+
+                });
+            }, 1000);
+
+        })
+    });
+
+
+
+</script>
+</body>
+</html>
