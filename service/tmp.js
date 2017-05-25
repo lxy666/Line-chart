@@ -10,11 +10,12 @@ exports.tmp = function (tem, hum, sun, rfid) {
         port: '3306',
         database: 'trdb'
     });
-
+//连接数据库
     connection.connect();
+    //获取本地时间
     var date = new Date();
     var time = date.toLocaleString();
-
+//将数据插入数据库
     var promise = new Promise(function (resolve, reject) {
         var userAddSql = 'INSERT INTO temp(tem, hum, sun, time,rfid) VALUES(?,?,?,?,?)';
         var userAddSql_Params = [tem, hum, sun, time, rfid];
@@ -50,6 +51,8 @@ exports.select_info = function (start, end) {
     connection.connect();
     var promise = new Promise(function (resolve, reject) {
         var list;
+       //筛选数据
+        //key 为主键 自动增加
         var userAddSql = "SELECT * FROM temp WHERE temp.key>='" + start + "'AND temp.key<='" + end + "'";
         connection.query(userAddSql, function (err, result) {
             if (err) {
