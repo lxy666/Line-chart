@@ -41,5 +41,5 @@ app.use(controller.get('/index.html', function*() {
     this.body = yield render('index');
 }));
 
-
+//设置3000端口监听事件
 app.listen(3000);
