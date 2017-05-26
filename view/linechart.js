@@ -36,9 +36,6 @@ function loadLineChart(elementId, dataset) {
     var xScale = d3.scale.linear()
         .domain([2000, 2013])
         .range([0, width - padding.left - padding.right]);
-    // var xScale = d3.scale.ordinal()
-    // .domain(names)
-    // .rangeRoundBands([0, width - padding.left - padding.right]);
 
     var yScale = d3.scale.linear()
         .domain([0, gdpmax * 1.1])
@@ -60,7 +57,7 @@ function loadLineChart(elementId, dataset) {
     //添加路径
     svg.selectAll("path") //选择<svg>中所有的<path>
         .data(dataset) //绑定数据
-        .enter() //选择enter部分
+        .enter() 
         .append("path") //添加足够数量的<path>元素
         .attr("transform", "translate(" + padding.left + "," + padding.top + ")")
         .attr("d", function (d) {
